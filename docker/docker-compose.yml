@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+    rabbitmq3:
+        container_name: "rabbitmq"
+        image: rabbitmq:3.8-management-alpine
+        environment:
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=admin
+        ports:
+            # AMQP protocol port
+            - '5672:5672'
+            # HTTP management UI
+            - '15672:15672'
+    nest-main-server:
+        container_name: main-god
+        image: dockerfiles/main-server/dockerfile
+        hostname: main-god
+        restart: on-failure:3
+        env_file: dockerfiles/main-server/.env
+        build:
+            context: ../
+            dockerfile: docker/dockerfiles/main-server/dockerfile
+        ports:
+            - '3000:3000'
+        volumes:
+            - "../server/main-server/src:/server/main-server/src"
+
+volumes:
+    files:
+    nest-main-server:
+

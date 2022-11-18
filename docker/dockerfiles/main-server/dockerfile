@@ -1,0 +1,22 @@
+FROM node:16.15.0-alpine3.14
+
+# Create app directory, this is in our container/in our image
+WORKDIR /server/main-server
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+ADD /server/main-server/package.json ./package.json
+# ADD /server/main-server/src ./src
+ADD /server/main-server/nest-cli.json ./nest-cli.json
+ADD /server/main-server/tsconfig.build.json ./tsconfig.build.json
+ADD /server/main-server/tsconfig.json ./tsconfig.json
+
+EXPOSE 3000
+
+
+RUN npm install
+RUN ls -la
+# If you are building your code for production
+# RUN npm ci --only=production
+# COPY . .
+
+CMD npm run start:dev
