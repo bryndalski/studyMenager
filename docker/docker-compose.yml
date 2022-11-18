@@ -1,22 +1,28 @@
 version: "3.8"
+networks:
+    app-network:
+        driver: bridge
+  
 services:
     rabbitmq3:
-        container_name: "rabbitmq"
-        image: rabbitmq:3.8-management-alpine
-        environment:
-            - RABBITMQ_DEFAULT_USER=admin
-            - RABBITMQ_DEFAULT_PASS=admin
+        container_name: "kroliczek"
+        env_file:
+            - dockerfiles/common/.common.env
         ports:
             # AMQP protocol port
             - '5672:5672'
             # HTTP management UI
             - '15672:15672'
+        networks:
+            - app-network
     nest-main-server:
         container_name: main-god
         image: dockerfiles/main-server/dockerfile
         hostname: main-god
         restart: on-failure:3
-        env_file: dockerfiles/main-server/.env
+        env_file: 
+            - dockerfiles/common/.common.env
+            - dockerfiles/main-server/.env
         build:
             context: ../
             dockerfile: docker/dockerfiles/main-server/dockerfile
@@ -24,8 +30,24 @@ services:
             - '3000:3000'
         volumes:
             - "../server/main-server/src:/server/main-server/src"
+        networks:
+            - app-network
+    auth-service:
+        container_name: guardian-angel
+        image: dockerfiles/auth-service/dockerfile
+        hostname: guardian-angel
+        restart: on-failure:3
+        env_file: dockerfiles/auth-service/.env
+        build:
+            context: ../
+            dockerfile: docker/dockerfiles/auth-service/dockerfile
+        volumes:
+            - "../server/auth-service/src:/server/auth-service/src"
+        networks:
+            - app-network
 
 volumes:
     files:
     nest-main-server:
+    auth-service:
 

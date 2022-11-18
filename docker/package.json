@@ -1,0 +1,12 @@
+{
+  "name": "dokcer-taskify",
+  "version": "1.0.0",
+  "description": "Package json for dockers made for project. here to help menaging microservices",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "docker-compose up"
+  },
+  "author": "jakub bryndal",
+  "license": "ISC"
+}
