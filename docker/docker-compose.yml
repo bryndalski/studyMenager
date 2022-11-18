@@ -6,6 +6,7 @@ networks:
 services:
     rabbitmq3:
         container_name: "kroliczek"
+        image: rabbitmq:3.8-management-alpine
         env_file:
             - dockerfiles/common/.common.env
         ports:
@@ -37,7 +38,9 @@ services:
         image: dockerfiles/auth-service/dockerfile
         hostname: guardian-angel
         restart: on-failure:3
-        env_file: dockerfiles/auth-service/.env
+        env_file: 
+            - dockerfiles/auth-service/.env
+            - dockerfiles/common/.common.env
         build:
             context: ../
             dockerfile: docker/dockerfiles/auth-service/dockerfile

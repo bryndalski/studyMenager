@@ -8,7 +8,9 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://admin:admin@kroliczek:5672'],
+        urls: [
+          `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.BUNNY_ADDRESS}:5672`,
+        ],
         queue: 'auth',
         queueOptions: {
           durable: true,
@@ -16,9 +18,7 @@ async function bootstrap() {
       },
     },
   )
-  console.log('====================================')
-  console.log('auth słucha')
-  console.log('====================================')
+  console.log(process.env.BUNNY_ADDRESS)
   await app.listen()
 }
 bootstrap()
