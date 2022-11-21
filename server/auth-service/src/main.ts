@@ -18,7 +18,6 @@ async function bootstrap() {
       },
     },
   )
-  console.log(process.env.BUNNY_ADDRESS)
   await app.listen()
 }
 bootstrap()

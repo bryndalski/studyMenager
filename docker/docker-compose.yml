@@ -4,6 +4,18 @@ networks:
         driver: bridge
   
 services:
+    lb:
+        image: haproxy:2.3
+        restart: always
+        ports:
+            - "3005:3005"
+        volumes:
+            - ./haproxy:/usr/local/etc/haproxy
+        deploy:
+            resources:
+                limits:
+                    memory: 500M
+        container_name: Haproxy
     rabbitmq3:
         container_name: "kroliczek"
         image: rabbitmq:3.8-management-alpine
