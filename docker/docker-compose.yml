@@ -4,6 +4,16 @@ networks:
         driver: bridge
   
 services:
+    poggers-sql:
+        image: postgres:14.1-alpine
+        restart: always
+        env_file:
+            - .env
+        ports:
+            - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+        volumes: 
+            - poggers-sql-data:/var/lib/postgresql/data
+        hostname: "${POSTGRES_HOSTNAME}"
     load-balancer:
         image: haproxy:2.3
         restart: always
@@ -44,7 +54,9 @@ services:
             dockerfile: docker/dockerfiles/main-server/dockerfile
         volumes:
             - "../server/main-server/src:/server/main-server/src"
-
+        depends_on:
+            - load-balancer
+            - poggers-sql
     auth-service:
         container_name: auth-server
         image: dockerfiles/auth-service/dockerfile
@@ -60,8 +72,25 @@ services:
             - "../server/auth-service/src:/server/auth-service/src"
         depends_on:
             - rabbitmq3
+            - poggers-sql
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pg-admin
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "${PGADMIN_PORT}:80"
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin 
+        hostname: "${PGADMIN_HOST_NAME}"
+        depends_on:
+            - poggers-sql
+               
 volumes:
     files:
     nest-main-server:
     auth-service:
+    poggers-sql-data:
+    pgadmin-data:
 
