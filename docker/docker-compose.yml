@@ -4,63 +4,62 @@ networks:
         driver: bridge
   
 services:
-    lb:
+    load-balancer:
         image: haproxy:2.3
         restart: always
+        env_file:
+            - .env
         ports:
-            - "3005:3005"
+            - "${LOAD_BALANCER_PORT}:${LOAD_BALANCER_PORT}"
         volumes:
             - ./haproxy:/usr/local/etc/haproxy
         deploy:
             resources:
                 limits:
                     memory: 500M
-        container_name: Haproxy
+        container_name: Haproxy-LOAD-BALANCER
     rabbitmq3:
         container_name: "kroliczek"
         image: rabbitmq:3.8-management-alpine
         env_file:
-            - dockerfiles/common/.common.env
+            - .env
         ports:
             # AMQP protocol port
-            - '5672:5672'
+            - '${BUNNY_CONNECTION_PORT}:${BUNNY_CONNECTION_PORT}'
             # HTTP management UI
             - '15672:15672'
-        networks:
-            - app-network
+        hostname: ${BUNNY_HOSTNAME}
+        depends_on:
+            - load-balancer
     nest-main-server:
-        container_name: main-god
+        container_name: main-server
         image: dockerfiles/main-server/dockerfile
-        hostname: main-god
+        hostname: "${MAIN_SERVER_HOSTNAME}"
         restart: on-failure:3
         env_file: 
-            - dockerfiles/common/.common.env
+            - .env
             - dockerfiles/main-server/.env
         build:
             context: ../
             dockerfile: docker/dockerfiles/main-server/dockerfile
-        ports:
-            - '3000:3000'
         volumes:
             - "../server/main-server/src:/server/main-server/src"
-        networks:
-            - app-network
+
     auth-service:
-        container_name: guardian-angel
+        container_name: auth-server
         image: dockerfiles/auth-service/dockerfile
-        hostname: guardian-angel
+        hostname: "${AUTH_SERVER_HOSTNAME}"
         restart: on-failure:3
         env_file: 
             - dockerfiles/auth-service/.env
-            - dockerfiles/common/.common.env
+            - .env
         build:
             context: ../
             dockerfile: docker/dockerfiles/auth-service/dockerfile
         volumes:
             - "../server/auth-service/src:/server/auth-service/src"
-        networks:
-            - app-network
-
+        depends_on:
+            - rabbitmq3
 volumes:
     files:
     nest-main-server:

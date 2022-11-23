@@ -1,0 +1,12 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "server instalation mode",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd auth-service && npm i && cd ../main-server && npm i"
+  },
+  "author": "jakub bryndal",
+  "license": "ISC"
+}

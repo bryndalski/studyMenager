@@ -7,17 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.TCP,
     options: {
-      // host: process.env.HOST, //
-      port: process.env.PORT,
+      port: 3001,
     },
   })
-  // const config = new DocumentBuilder()
-  //   .setTitle('Taskify')
-  //   .setDescription('Taskify main server documentation')
-  //   .setVersion('1.0')
-  //   .build()
-  // const document = SwaggerModule.createDocument(app, config)
-  // SwaggerModule.setup('docs', app, document)
   await app.listen()
 }
 bootstrap()

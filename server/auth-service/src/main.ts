@@ -1,23 +1,25 @@
+import { Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.RMQ,
-      options: {
-        urls: [
-          `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.BUNNY_ADDRESS}:5672`,
-        ],
-        queue: 'auth',
-        queueOptions: {
-          durable: true,
-        },
-      },
+  const configService = new ConfigService()
+  const logger = new Logger()
+  const app = await NestFactory.create(AppModule)
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get('BUNNY_CONNECT')],
+      queue: `${configService.get('auth-queue')}`,
+      queueOptions: { durable: false },
+      prefetchCount: 1,
     },
-  )
-  await app.listen()
+  })
+  await app.startAllMicroservices()
+  app.setGlobalPrefix(configService.get('AUTH_SERVER_PREFIX'))
+  await app.listen(configService.get('PORT'))
+  logger.log(`🚀 Auth service running on port ${configService.get('PORT')}`)
 }
 bootstrap()

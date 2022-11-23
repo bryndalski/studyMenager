@@ -9,7 +9,7 @@ ADD /server/auth-service/nest-cli.json ./nest-cli.json
 ADD /server/auth-service/tsconfig.build.json ./tsconfig.build.json
 ADD /server/auth-service/tsconfig.json ./tsconfig.json
 
-
+EXPOSE 3002
 
 RUN npm install
 # If you are building your code for production

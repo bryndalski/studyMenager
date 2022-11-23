@@ -12,7 +12,7 @@ import { AppService } from './app.service'
         name: 'auth-service',
         transport: Transport.RMQ,
         options: {
-          urls: [`amqp://:5672`],
+          urls: [`amqp:${process.env.BUNNY_ADDRESS}//:5672`],
           queue: 'auth_queue',
           queueOptions: {
             durable: false,
