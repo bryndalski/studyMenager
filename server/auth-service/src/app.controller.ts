@@ -1,6 +1,6 @@
-import { Controller, Get } from '@nestjs/common'
-import { MessagePattern } from '@nestjs/microservices'
-import { AppService } from './app.service'
+import { Controller, Get } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
@@ -8,11 +8,11 @@ export class AppController {
 
   @Get('sayHello')
   getHello(): string {
-    console.log('boink')
-    return this.appService.getHello()
+    return this.appService.getHello();
   }
+
   @MessagePattern({ cmd: 'hello' })
   getxo(): string {
-    return this.appService.getHello()
+    return this.appService.getHello();
   }
 }

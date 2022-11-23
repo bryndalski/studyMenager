@@ -1,13 +1,13 @@
-import { Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { NestFactory } from '@nestjs/core'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { AppModule } from './app.module'
+import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { Transport } from '@nestjs/microservices';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const configService = new ConfigService()
-  const logger = new Logger()
-  const app = await NestFactory.create(AppModule)
+  const configService = new ConfigService();
+  const logger = new Logger();
+  const app = await NestFactory.create(AppModule);
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -16,10 +16,10 @@ async function bootstrap() {
       queueOptions: { durable: false },
       prefetchCount: 1,
     },
-  })
-  await app.startAllMicroservices()
-  app.setGlobalPrefix(configService.get('AUTH_SERVER_PREFIX'))
-  await app.listen(configService.get('PORT'))
-  logger.log(`🚀 Auth service running on port ${configService.get('PORT')}`)
+  });
+  await app.startAllMicroservices();
+  app.setGlobalPrefix(configService.get('AUTH_SERVER_PREFIX'));
+  await app.listen(configService.get('PORT'));
+  logger.log(`🚀 Auth service running on port ${configService.get('PORT')}`);
 }
-bootstrap()
+void bootstrap();
