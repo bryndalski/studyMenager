@@ -30,3 +30,13 @@ Handle auth via:
 ## Mobile devices service
 
 1. 2 Factor auth
+
+# DATABASE
+
+Related with user
+
+multiple
+
+1. Contain Password data
+2. Contain Tokens assigned to user
+3. Contain Refresh Tokens

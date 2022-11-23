@@ -58,9 +58,9 @@ services:
             - load-balancer
             - poggers-sql
     auth-service:
-        container_name: auth-server
+        container_name: auth-service
         image: dockerfiles/auth-service/dockerfile
-        hostname: "${AUTH_SERVER_HOSTNAME}"
+        hostname: "${AUTH_SERVICE_HOSTNAME}"
         restart: on-failure:3
         env_file: 
             - dockerfiles/auth-service/.env
@@ -86,7 +86,23 @@ services:
         hostname: "${PGADMIN_HOST_NAME}"
         depends_on:
             - poggers-sql
-               
+    user-service:
+            container_name: user-server
+            image: dockerfiles/user-server/dockerfile
+            hostname: "${USER_SERVER_HOSTNAME}"
+            restart: on-failure:3
+            env_file: 
+                - .env
+                - dockerfiles/user-server/.env
+            build:
+                context: ../
+                dockerfile: docker/dockerfiles/user-server/dockerfile
+            volumes:
+                - "../server/user-server/src:/server/user-server/src"
+            depends_on:
+                - load-balancer
+                - poggers-sql
+
 volumes:
     files:
     nest-main-server:

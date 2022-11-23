@@ -18,8 +18,10 @@ async function bootstrap() {
     },
   });
   await app.startAllMicroservices();
-  app.setGlobalPrefix(configService.get('AUTH_SERVER_PREFIX'));
+  app.setGlobalPrefix(configService.get('AUTH_SERVICE_PREFIX'));
   await app.listen(configService.get('PORT'));
-  logger.log(`🚀 Auth service running on port ${configService.get('PORT')}`);
+  logger.log(
+    `🚀 Auth service running on port ${configService.get('AUTH_SERVICE_PORT')}`,
+  );
 }
 void bootstrap();
