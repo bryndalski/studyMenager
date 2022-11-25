@@ -1,12 +1,5 @@
-import { userAccountTypes } from '../../common/enums/user/accoutTypes.enum';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
-import { Passwords } from './password.entity';
+import { userAccountTypes } from "../../common/enums/user/accoutTypes.enum";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class User {
@@ -19,13 +12,15 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ default: userAccountTypes.local })
   accountType: userAccountTypes;
 
-  @OneToOne(() => Passwords)
-  @JoinColumn()
-  password: Passwords;
+  /*
+   * @OneToOne(() => Passwords)
+   * @JoinColumn()
+   * password: Passwords;
+   */
 }

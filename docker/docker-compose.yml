@@ -14,6 +14,21 @@ services:
         volumes: 
             - poggers-sql-data:/var/lib/postgresql/data
         hostname: "${POSTGRES_HOSTNAME}"
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pg-admin
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "${PGADMIN_PORT}:80"
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin 
+        hostname: "${PGADMIN_HOST_NAME}"
+        logging:
+            driver: none
+        depends_on:
+            - poggers-sql
     load-balancer:
         image: haproxy:2.3
         restart: always
@@ -34,9 +49,7 @@ services:
         env_file:
             - .env
         ports:
-            # AMQP protocol port
             - '${BUNNY_CONNECTION_PORT}:${BUNNY_CONNECTION_PORT}'
-            # HTTP management UI
             - '15672:15672'
         hostname: ${BUNNY_HOSTNAME}
         depends_on:
@@ -75,42 +88,27 @@ services:
         depends_on:
             - rabbitmq3
             - poggers-sql
-    pgadmin:
-        image: dpage/pgadmin4
-        container_name: pg-admin
-        env_file:
-            - .env
-        restart: always
-        ports:
-            - "${PGADMIN_PORT}:80"
-        volumes:
-            - pgadmin-data:/var/lib/pgadmin 
-        hostname: "${PGADMIN_HOST_NAME}"
-        depends_on:
-            - poggers-sql
-    user-service:
-            container_name: user-service
-            image: dockerfiles/user-service/dockerfile
+    users-service:
+            container_name: users-service
+            image: dockerfiles/users-service/dockerfile
             hostname: "${USER_SERVER_HOSTNAME}"
             restart: on-failure:3
+            ports:
+                - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
             env_file: 
                 - .env
-                - dockerfiles/user-service/.env
+                - dockerfiles/users-service/.env
             build:
                 context: ../
-                dockerfile: docker/dockerfiles/user-service/dockerfile
+                dockerfile: docker/dockerfiles/users-service/dockerfile
             volumes:
-                - "../server/user-service/src:/server/user-service/src"
+                - "../server/users-service/src:/server/users-service/src"
                 - "../server/common:/server/common"
             depends_on:
                 - load-balancer
                 - poggers-sql
 
 volumes:
-    files:
-    nest-main-server:
-    auth-service:
-    user-service:
     poggers-sql-data:
     pgadmin-data:
 
