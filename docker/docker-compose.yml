@@ -70,6 +70,8 @@ services:
             dockerfile: docker/dockerfiles/auth-service/dockerfile
         volumes:
             - "../server/auth-service/src:/server/auth-service/src"
+            - "../server/common:/server/common"
+
         depends_on:
             - rabbitmq3
             - poggers-sql
@@ -99,6 +101,7 @@ services:
                 dockerfile: docker/dockerfiles/user-service/dockerfile
             volumes:
                 - "../server/user-service/src:/server/user-service/src"
+                - "../server/common:/server/common"
             depends_on:
                 - load-balancer
                 - poggers-sql
@@ -107,6 +110,7 @@ volumes:
     files:
     nest-main-server:
     auth-service:
+    user-service:
     poggers-sql-data:
     pgadmin-data:
 

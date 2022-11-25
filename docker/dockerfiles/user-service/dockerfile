@@ -5,12 +5,10 @@ WORKDIR /server/user-service
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 ADD /server/user-service/package.json ./package.json
-# ADD /server/user-service/src ./src
 ADD /server/user-service/nest-cli.json ./nest-cli.json
 ADD /server/user-service/tsconfig.build.json ./tsconfig.build.json
 ADD /server/user-service/tsconfig.json ./tsconfig.json
-
-
+ADD /server/common /server/common
 
 
 RUN npm install
