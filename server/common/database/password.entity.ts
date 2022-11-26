@@ -1,16 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
 
 @Entity()
 export class Passwords {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number
 
-  @Column()
-  passwordHash: string;
+    @Column()
+    passwordHash: string
 
-  @Column()
-  expired: boolean;
+    @Column()
+    expired: boolean
 
-  @Column()
-  lastChanged: Date;
+    @Column()
+    lastChanged: Date
 }
