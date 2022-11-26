@@ -1,9 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common'
+import {
+    ConflictException,
+    HttpStatus,
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+} from '@nestjs/common'
 import { RegisterUserDTO } from '../../../common/DTO/user/registerUser.dto'
 import { User } from '../../../common/database/user.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-
+import { UserErrorsE } from '../../../common/errors/UserError.enum'
 @Injectable()
 export class CreateUserService {
     private readonly logger = new Logger(CreateUserService.name)
@@ -13,23 +19,37 @@ export class CreateUserService {
         private userEntity: Repository<User>
     ) {}
 
+    /**
+     *
+     * Saves user local user into database
+     *      *
+     * @returns http status
+     */
     public async createLocalUser(props: RegisterUserDTO) {
         try {
             const databaseUser = this.userEntity.create(props)
-            await this.checkIfUserExist(props.email)
-            return await this.userEntity.save(databaseUser)
+            //if user exists
+            if (await this.checkIfUserExist(props.email))
+                throw new Error(UserErrorsE.userExists)
+            await this.userEntity.save(databaseUser)
+            return HttpStatus.CREATED
         } catch (error) {
             this.logger.error({
                 method: 'createLocalUser',
-                error,
+                error: [error.message] ? [error.message] : error,
             })
+            //throws proper errors
+            if (error?.message === UserErrorsE.userExists)
+                //user exists can not be created
+                throw new ConflictException('user already exists')
+            else throw new InternalServerErrorException()
         }
     }
 
     /**
      * Check if user already exist in database
      * @param email string user emails
-     * @returns
+     * @returns true if user exists | false if does not
      */
     public async checkIfUserExist(email: string): Promise<boolean> {
         try {
@@ -37,13 +57,14 @@ export class CreateUserService {
                 method: 'checkIfUserExist',
                 message: `looking for user with mail ${email}`,
             })
-            const founduser = await this.userEntity.findOne({
+            const foundUser = await this.userEntity.findOne({
                 where: { email },
             })
+
             this.logger.log(
-                `user with email: ${email}, was found: ${!founduser}`
+                `user with email: ${email}, was found: ${foundUser !== null}`
             )
-            return !founduser
+            return foundUser !== null
         } catch (error) {
             this.logger.error({
                 method: 'checkIfUserExist',
