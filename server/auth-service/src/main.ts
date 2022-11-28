@@ -12,8 +12,8 @@ async function bootstrap() {
         transport: Transport.RMQ,
         options: {
             urls: [configService.get('BUNNY_CONNECT')],
-            queue: `${configService.get('auth-queue')}`,
-            queueOptions: { durable: false },
+            queue: `${configService.get('AUTH_QUEUE')}`,
+            queueOptions: { durable: true },
             prefetchCount: 1,
         },
     })

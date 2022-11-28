@@ -1,6 +1,7 @@
 import {
     ConflictException,
     HttpStatus,
+    Inject,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -10,13 +11,18 @@ import { User } from '../../../common/database/user.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserErrorsE } from '../../../common/errors/UserError.enum'
+import { ClientProxy } from '@nestjs/microservices'
+import { firstValueFrom } from 'rxjs'
 @Injectable()
 export class CreateUserService {
     private readonly logger = new Logger(CreateUserService.name)
 
     constructor(
         @InjectRepository(User)
-        private userEntity: Repository<User>
+        private userEntity: Repository<User>,
+
+        @Inject('AUTH_SERVICE')
+        private authService: ClientProxy
     ) {}
 
     /**
@@ -27,10 +33,11 @@ export class CreateUserService {
      */
     public async createLocalUser(props: RegisterUserDTO) {
         try {
-            const databaseUser = this.userEntity.create(props)
-            //if user exists
+            //   if user exists
             if (await this.checkIfUserExist(props.email))
                 throw new Error(UserErrorsE.userExists)
+            const databaseUser = this.userEntity.create(props)
+            const passwordHash = await this.getUserPasswordHash(props.password)
             await this.userEntity.save(databaseUser)
             return HttpStatus.CREATED
         } catch (error) {
@@ -71,6 +78,25 @@ export class CreateUserService {
                 error,
             })
             throw new Error(`could not find user with email: ${email}`)
+        }
+    }
+
+    /**
+     * Sends request with password to receive hashed pass
+     * @param password
+     * @returns
+     */
+    private async getUserPasswordHash(password: string): Promise<string> {
+        try {
+            return await firstValueFrom(
+                this.authService.send({ cmd: `hash_password` }, { password })
+            )
+        } catch (error) {
+            this.logger.error({
+                method: 'getUserPasswordHash',
+                error,
+            })
+            throw new InternalServerErrorException()
         }
     }
 }

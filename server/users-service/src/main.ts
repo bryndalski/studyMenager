@@ -15,13 +15,13 @@ async function bootstrap() {
         transport: Transport.RMQ,
         options: {
             urls: [configService.get('BUNNY_CONNECT')],
-            queue: `${configService.get('AUTH_QUEUE')}`,
+            queue: `${configService.get('USER_QUEUE')}`,
             queueOptions: { durable: false },
             prefetchCount: 1,
         },
     })
     app.useGlobalPipes(new ValidationPipe())
-
+    //swagger
     const config = new DocumentBuilder()
         .setTitle('User-service ')
         .setDescription('User service documentation')

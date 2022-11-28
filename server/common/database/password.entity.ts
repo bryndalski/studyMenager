@@ -13,4 +13,16 @@ export class Passwords {
 
     @Column()
     lastChanged: Date
+
+    @Column({
+        nullable: false,
+        default: () => new Date(),
+        type: 'timestamp',
+    })
+    expiresAt: Date
+
+    /*
+     * @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"))
+     * createdAt: string
+     */
 }

@@ -17,7 +17,7 @@ import { ConfigModule } from '@nestjs/config'
             autoLoadEntities: true,
             synchronize: true,
         }),
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot({ isGlobal: true }),
         CreateUserModule,
     ],
     controllers: [AppController],

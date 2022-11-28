@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common'
+import { EventsControllerService } from './events-controller.service'
+import { EventsControllerController } from './events-controller.controller'
 import { ClientsModule, Transport } from '@nestjs/microservices'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { User } from '../../../common/database/user.entity'
-import { CreateUserController } from './create-user.controller'
-import { CreateUserService } from './create-user.service'
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User]),
         ClientsModule.register([
             {
                 name: 'AUTH_SERVICE',
@@ -16,13 +13,13 @@ import { CreateUserService } from './create-user.service'
                     urls: [process.env.BUNNY_CONNECT],
                     queue: process.env.AUTH_QUEUE,
                     queueOptions: {
-                        durable: true,
+                        durable: false,
                     },
                 },
             },
         ]),
     ],
-    providers: [CreateUserService],
-    controllers: [CreateUserController],
+    providers: [EventsControllerService],
+    controllers: [EventsControllerController],
 })
-export class CreateUserModule {}
+export class EventsControllerModule {}
