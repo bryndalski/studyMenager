@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { User } from '../../../common/database/user.entity'
+import { UserEntity } from '../../../common/database/user.entity'
 import { CreateUserController } from './create-user.controller'
 import { CreateUserService } from './create-user.service'
+import { PasswordsEntity } from '../../../common/database/password.entity'
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([UserEntity, PasswordsEntity]),
         ClientsModule.register([
             {
                 name: 'AUTH_SERVICE',

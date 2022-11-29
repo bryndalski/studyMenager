@@ -1,28 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
 
 @Entity()
-export class Passwords {
+export class PasswordsEntity {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
     passwordHash: string
 
-    @Column()
+    @Column({ default: false })
     expired: boolean
 
-    @Column()
-    lastChanged: Date
-
-    @Column({
-        nullable: false,
-        default: () => new Date(),
-        type: 'timestamp',
-    })
-    expiresAt: Date
+    /*
+     * @Column({ type: 'timestamp', default: () => new Date(), nullable: false })
+     * lastChanged: Date
+     */
 
     /*
-     * @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"))
-     * createdAt: string
+     * @Column({ nullable: false, default: () => new Date(), type: 'timestamp' })
+     * expiresAt: Date
+     */
+
+    /*
+     * @Column({ type: 'timestamp', default: () => new Date(), nullable: false })
+     * createdAt: Date
      */
 }

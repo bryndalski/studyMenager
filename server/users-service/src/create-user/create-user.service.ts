@@ -7,7 +7,7 @@ import {
     Logger,
 } from '@nestjs/common'
 import { RegisterUserDTO } from '../../../common/DTO/user/registerUser.dto'
-import { User } from '../../../common/database/user.entity'
+import { UserEntity } from '../../../common/database/user.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserErrorsE } from '../../../common/errors/UserError.enum'
@@ -18,8 +18,8 @@ export class CreateUserService {
     private readonly logger = new Logger(CreateUserService.name)
 
     constructor(
-        @InjectRepository(User)
-        private userEntity: Repository<User>,
+        @InjectRepository(UserEntity)
+        private userEntity: Repository<UserEntity>,
 
         @Inject('AUTH_SERVICE')
         private authService: ClientProxy
@@ -36,8 +36,13 @@ export class CreateUserService {
             //   if user exists
             if (await this.checkIfUserExist(props.email))
                 throw new Error(UserErrorsE.userExists)
-            const databaseUser = this.userEntity.create(props)
             const passwordHash = await this.getUserPasswordHash(props.password)
+            const databaseUser = this.userEntity.create({
+                ...props,
+                password: {
+                    passwordHash,
+                },
+            })
             await this.userEntity.save(databaseUser)
             return HttpStatus.CREATED
         } catch (error) {

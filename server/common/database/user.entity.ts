@@ -1,10 +1,17 @@
 import { userAccountTypes } from '../../common/enums/user/accoutTypes.enum'
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    OneToOne,
+} from 'typeorm'
+import { PasswordsEntity } from './password.entity'
 
 @Entity()
-export class User {
+export class UserEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column()
     firstName: string
@@ -18,9 +25,9 @@ export class User {
     @Column({ default: userAccountTypes.local })
     accountType: userAccountTypes
 
-    /*
-     * @OneToOne(() => Passwords)
-     * @JoinColumn()
-     * password: Passwords;
-     */
+    @OneToOne(() => PasswordsEntity, (password) => password.id, {
+        cascade: true,
+    })
+    @JoinColumn()
+    password: PasswordsEntity
 }
