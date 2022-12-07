@@ -11,7 +11,7 @@ export class PasswordsEntity {
     @Column({ default: false })
     expired: boolean
 
-    @Column({ type: 'timestamp', default: () => new Date(), nullable: false })
+    @Column({ type: 'timestamp', default: new Date(), nullable: false })
     lastChanged: Date
 
     /*

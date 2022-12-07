@@ -29,9 +29,12 @@
         "@nestjs/swagger": "^6.1.4",
         "amqp-connection-manager": "^4.1.9",
         "amqplib": "^0.10.3",
+        "cd": "^0.3.3",
+        "common-package": "file:../common",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
-        "rxjs": "^7.6.0"
+        "rxjs": "^7.6.0",
+        "users-service": "file:../users-service"
     },
     "devDependencies": {
         "@nestjs/cli": "^9.1.5",
