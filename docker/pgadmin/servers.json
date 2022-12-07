@@ -9,7 +9,7 @@
       "Host": "poggers-database",
       "SSLMode": "prefer",
       "MaintenanceDB": "postgres",
-      "PassFile": "/pgpassfile"
+      "PassFile": "/tmp/pgpassfile"
     }
   }
 }

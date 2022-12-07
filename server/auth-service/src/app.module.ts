@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { EventsControllerModule } from './events-controller/events-controller.module'
-import { Passwords } from '../../common/database/password.entity'
+import { PasswordsEntity } from '../../common/database/password.entity'
 
 @Module({
     imports: [
@@ -18,7 +18,7 @@ import { Passwords } from '../../common/database/password.entity'
             database: process.env.POSTGRES_DATABASE_NAME,
             autoLoadEntities: true,
             synchronize: true,
-            entities: [Passwords],
+            entities: [PasswordsEntity],
         }),
 
         EventsControllerModule,

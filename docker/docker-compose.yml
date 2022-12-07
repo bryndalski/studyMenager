@@ -12,7 +12,27 @@ services:
         ports:
             - '${POSTGRES_PORT}:${POSTGRES_PORT}'
         volumes: 
-            - poggers-sql-data:/var/lib/postgresql/data
+           - poggers-sql-data:/var/lib/postgresql/data
+           - ./postgress/docker_postgres_init.sh:/docker-entrypoint-initdb.d/docker_postgres_init.sh  
+        hostname: "${POSTGRES_HOSTNAME}"
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pg-admin
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "${PGADMIN_PORT}:80"
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin 
+            - ./pgadmin/servers.json:/pgadmin4/servers.json
+        hostname: "${PGADMIN_HOST_NAME}"
+        depends_on:
+            - poggers-sql
+        entrypoint:
+            - "/bin/sh"
+            - "-c" 
+            - "/bin/echo '$${POSTGRES_HOSTNAME}:$${POSTGRES_PORT}:$${POSTGRES_DATABASE_NAME}:$${POSTGRES_USER}:$${POSTGRES_PASSWORD}' > /tmp/pgpassfile &&  chmod 600 /tmp/pgpassfile && /entrypoint.sh"        
     load-balancer:
         image: haproxy:2.3
         restart: always
@@ -38,6 +58,9 @@ services:
         hostname: ${BUNNY_HOSTNAME}
         depends_on:
             - load-balancer
+        volumes:
+            - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+            - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
     nest-main-server:
         container_name: main-server
         image: dockerfiles/main-server/dockerfile
@@ -54,6 +77,8 @@ services:
         depends_on:
             - load-balancer
             - poggers-sql
+            - rabbitmq3
+
     auth-service:
         container_name: auth-service
         image: dockerfiles/auth-service/dockerfile
@@ -73,23 +98,6 @@ services:
             - load-balancer
             - rabbitmq3
             - poggers-sql
-    pgadmin:
-        image: dpage/pgadmin4
-        container_name: pg-admin
-        env_file:
-            - .env
-        restart: always
-        ports:
-            - "${PGADMIN_PORT}:80"
-        volumes:
-            - pgadmin-data:/var/lib/pgadmin 
-        hostname: "${PGADMIN_HOST_NAME}"
-        depends_on:
-            - poggers-sql
-        entrypoint: 
-            - "/bin/echo '$${POSTGRES_HOST}:$${POSTGRES_PORT}:$${POSTGRES_DATABASE_NAME}:$${POSTGRES_USER}:$${POSTGRES_PASSWORD}' > /pgpassfile && chmod 600 /pgpassfile && /entrypoint.sh"
-
-               
     users-service:
             container_name: users-service
             image: dockerfiles/users-service/dockerfile

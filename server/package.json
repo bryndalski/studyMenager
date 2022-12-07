@@ -1,23 +1,23 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "server instalation mode",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "cd auth-service && npm i && cd ../main-server && npm i",
-    "format": "eslint --fix \"./**/*.{js,ts}\""
-  },
-  "author": "jakub bryndal",
-  "license": "ISC",
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^6.0.1",
-    "eslint-plugin-unused-imports": "^2.0.0",
-    "prettier": "^2.3.2"
-  }
+    "name": "server",
+    "version": "1.0.0",
+    "description": "server instalation mode",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "install": "cd auth-service && npm i && cd ../main-server && npm i cd ../users-service && npm i cd ../common && npm i",
+        "format": "eslint --fix \"./**/*.{js,ts}\""
+    },
+    "author": "jakub bryndal",
+    "license": "ISC",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.0.0",
+        "eslint": "^8.0.1",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-promise": "^6.0.1",
+        "eslint-plugin-unused-imports": "^2.0.0",
+        "prettier": "^2.3.2"
+    }
 }
