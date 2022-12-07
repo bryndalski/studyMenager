@@ -88,7 +88,6 @@ module.exports = {
                 skipComments: true,
             },
         ],
-        'multiline-comment-style': ['error', 'starred-block'],
         'no-console': 'error',
         'no-empty': 'error',
         'no-extra-semi': 'error',
@@ -100,7 +99,6 @@ module.exports = {
         'no-var': 'error',
         'prefer-const': 'error',
         'lines-between-class-members': 'error',
-        // 'promise/always-return': 'error',
         'promise/no-return-wrap': 'error',
         'promise/no-nesting': 'error',
         'require-jsdoc': [
