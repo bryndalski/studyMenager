@@ -22,6 +22,7 @@ Aby odplaić środowisko lokalnie musisz mieć:
 
 1. Przejdź do `server`
 2. Wpisz `npm i` i możesz iść na kawę bo chwilę poptrwa
+3. Przejdź do folderu `/server/common` i wpisz `npm i`
 
 ## Odpalanie dockera
 
