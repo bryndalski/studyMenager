@@ -13,7 +13,6 @@ services:
             - '${POSTGRES_PORT}:${POSTGRES_PORT}'
         volumes: 
             - poggers-sql-data:/var/lib/postgresql/data
-        hostname: "${POSTGRES_HOSTNAME}"
     load-balancer:
         image: haproxy:2.3
         restart: always
@@ -34,9 +33,7 @@ services:
         env_file:
             - .env
         ports:
-            # AMQP protocol port
             - '${BUNNY_CONNECTION_PORT}:${BUNNY_CONNECTION_PORT}'
-            # HTTP management UI
             - '15672:15672'
         hostname: ${BUNNY_HOSTNAME}
         depends_on:
@@ -58,9 +55,9 @@ services:
             - load-balancer
             - poggers-sql
     auth-service:
-        container_name: auth-server
+        container_name: auth-service
         image: dockerfiles/auth-service/dockerfile
-        hostname: "${AUTH_SERVER_HOSTNAME}"
+        hostname: "${AUTH_SERVICE_HOSTNAME}"
         restart: on-failure:3
         env_file: 
             - dockerfiles/auth-service/.env
@@ -70,7 +67,10 @@ services:
             dockerfile: docker/dockerfiles/auth-service/dockerfile
         volumes:
             - "../server/auth-service/src:/server/auth-service/src"
+            - "../server/common:/server/common"
+
         depends_on:
+            - load-balancer
             - rabbitmq3
             - poggers-sql
     pgadmin:
@@ -90,10 +90,28 @@ services:
             - "/bin/echo '$${POSTGRES_HOST}:$${POSTGRES_PORT}:$${POSTGRES_DATABASE_NAME}:$${POSTGRES_USER}:$${POSTGRES_PASSWORD}' > /pgpassfile && chmod 600 /pgpassfile && /entrypoint.sh"
 
                
+    users-service:
+            container_name: users-service
+            image: dockerfiles/users-service/dockerfile
+            hostname: "${USER_SERVER_HOSTNAME}"
+            restart: on-failure:3
+            ports:
+                - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+            env_file: 
+                - .env
+                - dockerfiles/users-service/.env
+            build:
+                context: ../
+                dockerfile: docker/dockerfiles/users-service/dockerfile
+            volumes:
+                - "../server/users-service/src:/server/users-service/src"
+                - "../server/common:/server/common"
+            depends_on:
+                - load-balancer
+                - rabbitmq3
+                - poggers-sql
+
 volumes:
-    files:
-    nest-main-server:
-    auth-service:
     poggers-sql-data:
     pgadmin-data:
 
