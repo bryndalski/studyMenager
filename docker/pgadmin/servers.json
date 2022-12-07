@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "studyfy-database",
+      "Group": "Servers",
+      "Port": 5432,
+      "Username": "admin",
+      "Password": "admin",
+      "Host": "poggers-database",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres",
+      "PassFile": "/pgpassfile"
+    }
+  }
+}
