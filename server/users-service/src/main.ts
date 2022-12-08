@@ -20,7 +20,12 @@ async function bootstrap() {
             prefetchCount: 1,
         },
     })
-    app.useGlobalPipes(new ValidationPipe())
+    app.useGlobalPipes(
+        new ValidationPipe({
+            forbidUnknownValues: true,
+            whitelist: true,
+        })
+    )
     //swagger
     const config = new DocumentBuilder()
         .setTitle('User-service ')

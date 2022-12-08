@@ -40,7 +40,7 @@ module.exports = {
             {
                 selector: 'variable',
                 modifiers: ['const'],
-                format: ['camelCase', 'UPPER_CASE'],
+                format: ['camelCase', 'UPPER_CASE', 'CamelCase'],
                 leadingUnderscore: 'allow',
                 trailingUnderscore: 'allow',
             },

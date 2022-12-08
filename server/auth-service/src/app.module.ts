@@ -1,21 +1,24 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { EventsControllerModule } from './events-controller/events-controller.module'
 import { PasswordsEntity } from '../../common/database/password.entity'
+import { JwtModule } from '@nestjs/jwt'
 
-console.log({
-    host: process.env.POSTGRES_HOSTNAME,
-    port: +process.env.POSTGRES_PORT,
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DATABASE_NAME,
-})
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                secret: configService.get('JWT_SECRET'),
+                signOptions: { expiresIn: '60s' },
+            }),
+        }),
+
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.POSTGRES_HOSTNAME,

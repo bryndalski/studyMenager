@@ -10,11 +10,11 @@ export class CreateUserController {
 
     @Post('local')
     @SwaggerPost({
-        summary: 'Register global user',
+        // summary: 'Register global user',
         description: 'Register local user',
-        success: 'User succesfully created',
+        // success: 'User succesfully created',
         conflict: 'User already exists',
-        internalServerError: 'Internal server problem',
+        apiTag: '',
     })
     async createLocalUser(@Body() user: RegisterUserDTO) {
         return await this.createUserService.createLocalUser(user)

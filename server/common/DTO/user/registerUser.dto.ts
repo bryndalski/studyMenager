@@ -17,7 +17,8 @@ export class RegisterUserDTO {
     @IsString()
     @ApiProperty({
         description: 'first name provided by user',
-        example: 'Adam | Julia',
+        example: 'Adam ',
+        default: 'Adam',
     })
     @MaxLength(20)
     firstName: string
@@ -26,7 +27,8 @@ export class RegisterUserDTO {
     @IsString()
     @ApiProperty({
         description: 'last name provided by user',
-        example: 'Kowalski | Kowalska',
+        example: 'Kowalski',
+        default: 'Kowalski',
         maxLength: 100,
     })
     @MaxLength(100)
