@@ -20,6 +20,7 @@ module.exports = {
     ignorePatterns: ['.eslintrc.js'],
     rules: {
         '@typescript-eslint/no-floating-promises': 'warn',
+        // 'unused-imports/no-unused-imports': 'error',
         'no-dupe-args': 'error',
         eqeqeq: 'error',
         'max-lines': [
@@ -114,4 +115,4 @@ module.exports = {
             },
         ],
     },
-}
+};

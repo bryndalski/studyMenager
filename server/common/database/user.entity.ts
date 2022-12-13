@@ -1,33 +1,36 @@
-import { userAccountTypes } from '../../common/enums/user/accoutTypes.enum'
 import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
     JoinColumn,
     OneToOne,
-} from 'typeorm'
-import { PasswordsEntity } from './password.entity'
+} from 'typeorm';
+import { PasswordsEntity } from './password.entity';
+import { AccountDetails } from './accountDetails.entity';
 
 @Entity()
 export class UserEntity {
     @PrimaryGeneratedColumn()
-    id!: number
+    id!: number;
 
     @Column()
-    firstName: string
+    firstName: string;
 
     @Column()
-    lastName: string
+    lastName: string;
 
     @Column({ unique: true })
-    email: string
-
-    @Column({ default: userAccountTypes.local })
-    accountType: userAccountTypes
+    email: string;
 
     @OneToOne(() => PasswordsEntity, (password) => password.id, {
         cascade: true,
     })
     @JoinColumn()
-    password: PasswordsEntity
+    password: PasswordsEntity;
+
+    @OneToOne(() => AccountDetails, ({ id }: AccountDetails) => id, {
+        cascade: true,
+    })
+    @JoinColumn()
+    accountDetails: AccountDetails;
 }

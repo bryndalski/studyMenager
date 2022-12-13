@@ -87,6 +87,8 @@ services:
         env_file: 
             - dockerfiles/auth-service/.env
             - .env
+        ports:
+            - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
         build:
             context: ../
             dockerfile: docker/dockerfiles/auth-service/dockerfile

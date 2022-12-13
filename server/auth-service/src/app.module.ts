@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { EventsControllerModule } from './events-controller/events-controller.module'
-import { PasswordsEntity } from '../../common/database/password.entity'
-import { JwtModule } from '@nestjs/jwt'
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { EventsControllerModule } from './events-controller/events-controller.module';
+import { PasswordsEntity } from '../../common/database/password.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { LoginModule } from './login/login.module';
+import { AccountDetails } from '../../common/database/accountDetails.entity';
+import { RefreshTokensEntity } from '../../common/database/refreshToken.entity';
 
 @Module({
     imports: [
@@ -28,10 +31,11 @@ import { JwtModule } from '@nestjs/jwt'
             database: process.env.POSTGRES_DATABASE_NAME,
             autoLoadEntities: true,
             synchronize: true,
-            entities: [PasswordsEntity],
+            entities: [PasswordsEntity, AccountDetails, RefreshTokensEntity],
         }),
 
         EventsControllerModule,
+        LoginModule,
     ],
     controllers: [AppController],
     providers: [AppService],
