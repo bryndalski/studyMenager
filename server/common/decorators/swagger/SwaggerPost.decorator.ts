@@ -1,77 +1,109 @@
-import { applyDecorators } from '@nestjs/common'
+import { applyDecorators } from '@nestjs/common';
 import {
     ApiConflictResponse,
     ApiCreatedResponse,
     ApiDefaultResponse,
+    ApiExtraModels,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
-} from '@nestjs/swagger'
+    getSchemaPath,
+} from '@nestjs/swagger';
+import { LoginLocalUserDTO } from '../../../auth-service/src/common/DTO/LoginLocalUser.dto';
+
+interface ISingleReposnse {
+    description: string;
+    schema: any;
+}
 
 interface ISwaggerPost {
-    apiTag: string
-    description: string
-    okResponse?: string
-    createdResponse?: string
-    serverError?: string
-    forbidden?: string
-    conflict?: string
-    notExists?: string
-    unaothorized?: string
+    apiTag: string;
+    description: string;
+    okResponse?: ISingleReposnse;
+    createdResponse?: ISingleReposnse;
+    serverError?: ISingleReposnse;
+    forbidden?: ISingleReposnse;
+    conflict?: ISingleReposnse;
+    notExists?: ISingleReposnse;
+    unaothorized?: ISingleReposnse;
 }
+
+const returnDecorator = ({
+    description,
+    schema,
+}: ISingleReposnse): ISingleReposnse => {
+    const decorator = {
+        description,
+        schema: {
+            $ref: getSchemaPath(schema),
+        },
+    } as ISingleReposnse;
+    return decorator;
+};
 
 export const SwaggerPost = (props: ISwaggerPost) => {
     const combinedDecorators = [
         ApiDefaultResponse({ description: props.description }),
         ApiTags(props.apiTag),
-    ]
+    ];
     Object.keys(props).forEach((element: string) => {
         switch (element) {
             case 'okResponse':
                 combinedDecorators.push(
-                    ApiOkResponse({ description: props[element] })
-                )
-                break
+                    ApiOkResponse({
+                        ...returnDecorator(props[element]),
+                    }),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'createdResponse':
                 combinedDecorators.push(
-                    ApiCreatedResponse({ description: props[element] })
-                )
-                break
+                    ApiCreatedResponse(returnDecorator(props[element])),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'serverError':
                 combinedDecorators.push(
-                    ApiInternalServerErrorResponse({
-                        description: props[element],
-                    })
-                )
-                break
+                    ApiInternalServerErrorResponse(
+                        returnDecorator(props[element])
+                    ),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'forbidden':
                 combinedDecorators.push(
-                    ApiForbiddenResponse({
-                        description: props[element],
-                    })
-                )
-                break
+                    ApiForbiddenResponse(returnDecorator(props[element])),
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'notExists':
                 combinedDecorators.push(
-                    ApiNotFoundResponse({
-                        description: props[element],
-                    })
-                )
-                break
+                    ApiNotFoundResponse(returnDecorator(props[element])),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'conflict':
                 combinedDecorators.push(
-                    ApiConflictResponse({ description: props[element] })
-                )
-                break
+                    ApiConflictResponse(returnDecorator(props[element])),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
             case 'unauthorized':
                 combinedDecorators.push(
-                    ApiUnauthorizedResponse({ description: props[element] })
-                )
-                break
+                    ApiUnauthorizedResponse(returnDecorator(props[element])),
+
+                    ApiExtraModels(props[element].schema)
+                );
+                break;
         }
-    })
-    return applyDecorators(...combinedDecorators)
-}
+    });
+    return applyDecorators(...combinedDecorators);
+};

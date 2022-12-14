@@ -50,7 +50,6 @@ export class LoginService {
                     id: true,
                 },
             });
-            console.log(user);
             if (user === null) {
                 throw new NotFoundException(ErrorCodes.login.userNotFound);
             }
