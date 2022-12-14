@@ -1,7 +1,9 @@
+import { UserEntity } from './user.entity';
 import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,4 +22,10 @@ export class RefreshTokensEntity {
         type: 'timestamp',
     })
     createdAt: Date;
+
+    @ManyToOne(
+        () => UserEntity,
+        ({ refreshTokens }: UserEntity) => refreshTokens
+    )
+    user: UserEntity;
 }

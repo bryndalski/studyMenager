@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { RefreshTokensEntity } from './refreshToken.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class PasswordsEntity {
@@ -18,10 +17,6 @@ export class PasswordsEntity {
     @Column({ type: 'boolean', default: false, nullable: false })
     needsToBeChanged: boolean;
 
-    @OneToMany(() => RefreshTokensEntity, ({ id }: RefreshTokensEntity) => id, {
-        cascade: true,
-    })
-    refreshToken: RefreshTokensEntity[];
     /*
      * @Column({ nullable: false, default: () => new Date(), type: 'timestamp' })
      * expiresAt: Date

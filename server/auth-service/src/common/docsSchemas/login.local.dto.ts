@@ -5,11 +5,6 @@ export class SuccessLoginLocal {
         description: 'User JWT access token',
     })
     accessToken: string;
-
-    @ApiProperty({
-        description: 'User JWT refresh access token hash',
-    })
-    refreshToken: string;
 }
 
 export class ErrorLoginLocal {

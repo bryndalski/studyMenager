@@ -9,11 +9,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoginLocalUserDTO } from 'src/common';
 import { Repository } from 'typeorm/repository/Repository';
 import { UserEntity } from '../../../common/database/user.entity';
-import { ErrorCodes } from '../../../common/errors/LoginError.enum';
+import { ERROR_CODES } from '../../../common/errors/LoginError.enum';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokensEntity } from '../../../common/database/refreshToken.entity';
+import { SuccessLoginLocal } from 'src/common/docsSchemas/login.local.dto';
 @Injectable()
 export class LoginService {
     private logger: Logger;
@@ -29,7 +30,9 @@ export class LoginService {
         this.logger = new Logger(LoginService.name);
     }
 
-    public async loginLocalUser(loginUserBody: LoginLocalUserDTO) {
+    public async loginLocalUser(
+        loginUserBody: LoginLocalUserDTO
+    ): Promise<SuccessLoginLocal> {
         try {
             const user = await this.userEnitity.findOne({
                 where: {
@@ -52,11 +55,11 @@ export class LoginService {
                 },
             });
             if (user === null) {
-                throw new NotFoundException(ErrorCodes.login.userNotFound);
+                throw new NotFoundException(ERROR_CODES.login.userNotFound);
             }
             if (!user.accountDetails.isActive) {
                 throw new ForbiddenException(
-                    ErrorCodes.login.userAccountNotActice
+                    ERROR_CODES.login.userAccountNotActice
                 );
             }
             if (
@@ -71,16 +74,23 @@ export class LoginService {
                     shouldPasswordChange: user.password.needsToBeChanged,
                 });
                 await this.createRefreshTokenWithHsh(user.id, accessToken);
+                return { accessToken };
             }
         } catch (error) {
             this.logger.error({
                 method: this.loginLocalUser.name,
-                error,
+                error: error?.message,
             });
             throw error;
         }
     }
 
+    /**
+     * Create refresh access token
+     * @param userId
+     * @param accessToken
+     * @returns
+     */
     private async createRefreshTokenWithHsh(
         userId: number,
         accessToken: string
@@ -109,17 +119,10 @@ export class LoginService {
             const refreshTokenForDB = this.refreshTokensEntity.create({
                 token: accessToken,
                 refreshTokenHash,
+                user: { id: userId },
             });
-            await this.userEnitity.update(
-                { id: userId },
-                {
-                    password: {
-                        refreshToken: {
-                            ...refreshTokenForDB,
-                        },
-                    },
-                }
-            );
+
+            await this.refreshTokensEntity.save(refreshTokenForDB);
             this.logger.log({
                 method: this.createRefreshTokenWithHsh.name,
                 message: `updated database refresh token for user ${userId}`,
@@ -130,7 +133,9 @@ export class LoginService {
                 method: this.createRefreshTokenWithHsh.name,
                 error: error?.message,
             });
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException(
+                'Could not create refresh token'
+            );
         }
     }
 }

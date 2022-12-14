@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsControllerModule } from './events-controller/events-controller.module';
 import { PasswordsEntity } from '../../common/database/password.entity';
-import { JwtModule } from '@nestjs/jwt';
 import { LoginModule } from './login/login.module';
 import { AccountDetails } from '../../common/database/accountDetails.entity';
 import { RefreshTokensEntity } from '../../common/database/refreshToken.entity';
@@ -13,14 +12,6 @@ import { RefreshTokensEntity } from '../../common/database/refreshToken.entity';
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get('JWT_SECRET'),
-                signOptions: { expiresIn: '60s' },
-            }),
-        }),
 
         TypeOrmModule.forRoot({
             type: 'postgres',

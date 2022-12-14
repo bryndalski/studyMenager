@@ -9,7 +9,10 @@ export class RegisterUserDTO {
     })
     email: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Users password',
+        example: 'superSecretPassword123!@',
+    })
     @MinLength(7)
     password: string;
 
@@ -17,8 +20,7 @@ export class RegisterUserDTO {
     @IsString()
     @ApiProperty({
         description: 'first name provided by user',
-        example: 'Adam ',
-        default: 'Adam',
+        example: 'Adam',
     })
     @MaxLength(20)
     firstName: string;
@@ -28,7 +30,6 @@ export class RegisterUserDTO {
     @ApiProperty({
         description: 'last name provided by user',
         example: 'Kowalski',
-        default: 'Kowalski',
         maxLength: 100,
     })
     @MaxLength(100)

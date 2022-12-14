@@ -4,9 +4,11 @@ import {
     Column,
     JoinColumn,
     OneToOne,
+    OneToMany,
 } from 'typeorm';
 import { PasswordsEntity } from './password.entity';
 import { AccountDetails } from './accountDetails.entity';
+import { RefreshTokensEntity } from './refreshToken.entity';
 
 @Entity()
 export class UserEntity {
@@ -30,7 +32,16 @@ export class UserEntity {
 
     @OneToOne(() => AccountDetails, ({ id }: AccountDetails) => id, {
         cascade: true,
+        onUpdate: 'CASCADE',
     })
     @JoinColumn()
     accountDetails: AccountDetails;
+
+    //ACCESS TOKENS
+    @OneToMany(() => RefreshTokensEntity, ({ id }: RefreshTokensEntity) => id, {
+        cascade: ['insert', 'remove'],
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    refreshTokens: RefreshTokensEntity[];
 }

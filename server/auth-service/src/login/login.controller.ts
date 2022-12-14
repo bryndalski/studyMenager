@@ -7,16 +7,16 @@ import {
 } from '../common/docsSchemas/login.local.dto';
 import { SwaggerPost } from '../../../common/decorators/swagger/SwaggerPost.decorator';
 import { LoginService } from './login.service';
-const API_TAG = 'login';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('login')
 @Controller('login')
 export class LoginController {
     constructor(private readonly loginService: LoginService) {}
 
     @Post('local')
     @SwaggerPost({
-        description: 'Login local user',
-        apiTag: API_TAG,
+        summary: 'Login local user',
         notExists: {
             description: 'User does not exist',
             schema: ErrorLoginLocal,
@@ -34,8 +34,11 @@ export class LoginController {
             description: 'Internal server errror',
             schema: ErrorLoginLocal,
         },
+        description: 'Login user local account via email and password',
     })
-    async loginLocalUser(@Body() loginUserBody: LoginLocalUserDTO) {
+    async loginLocalUser(
+        @Body() loginUserBody: LoginLocalUserDTO
+    ): Promise<SuccessLoginLocal> {
         return await this.loginService.loginLocalUser(loginUserBody);
     }
 }

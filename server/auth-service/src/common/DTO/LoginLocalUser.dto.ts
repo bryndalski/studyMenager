@@ -9,7 +9,10 @@ export class LoginLocalUserDTO {
     })
     email: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Users password - unhashed',
+        example: 'superSecretPassword123!@',
+    })
     @MinLength(7)
     password: string;
 }

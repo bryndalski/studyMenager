@@ -2,25 +2,24 @@ import { applyDecorators } from '@nestjs/common';
 import {
     ApiConflictResponse,
     ApiCreatedResponse,
-    ApiDefaultResponse,
     ApiExtraModels,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
-    ApiTags,
+    ApiOperation,
     ApiUnauthorizedResponse,
     getSchemaPath,
 } from '@nestjs/swagger';
 
 interface ISingleReposnse {
     description: string;
-    schema: any;
+    schema?: any;
 }
 
 interface ISwaggerPost {
-    apiTag: string;
     description: string;
+    summary: string;
     okResponse?: ISingleReposnse;
     createdResponse?: ISingleReposnse;
     serverError?: ISingleReposnse;
@@ -30,23 +29,28 @@ interface ISwaggerPost {
     unaothorized?: ISingleReposnse;
 }
 
-const returnDecorator = ({
-    description,
-    schema,
-}: ISingleReposnse): ISingleReposnse => {
-    const decorator = {
+const returnDecorator = ({ description, schema }: ISingleReposnse) => {
+    let decorator = {
         description,
-        schema: {
-            $ref: getSchemaPath(schema),
-        },
-    } as ISingleReposnse;
+    } as any;
+
+    if (schema) {
+        decorator = {
+            ...decorator,
+            schema: {
+                $ref: getSchemaPath(schema),
+            },
+        };
+    }
     return decorator;
 };
 
 export const SwaggerPost = (props: ISwaggerPost) => {
     const combinedDecorators = [
-        ApiDefaultResponse({ description: props.description }),
-        ApiTags(props.apiTag),
+        ApiOperation({
+            description: props.description,
+            summary: props.summary,
+        }),
     ];
     Object.keys(props).forEach((element: string) => {
         switch (element) {
@@ -54,55 +58,48 @@ export const SwaggerPost = (props: ISwaggerPost) => {
                 combinedDecorators.push(
                     ApiOkResponse({
                         ...returnDecorator(props[element]),
-                    }),
-
-                    ApiExtraModels(props[element].schema)
+                    })
                 );
                 break;
             case 'createdResponse':
                 combinedDecorators.push(
-                    ApiCreatedResponse(returnDecorator(props[element])),
-
-                    ApiExtraModels(props[element].schema)
+                    ApiCreatedResponse(returnDecorator(props[element]))
                 );
                 break;
             case 'serverError':
                 combinedDecorators.push(
                     ApiInternalServerErrorResponse(
                         returnDecorator(props[element])
-                    ),
-
-                    ApiExtraModels(props[element].schema)
+                    )
                 );
                 break;
             case 'forbidden':
                 combinedDecorators.push(
-                    ApiForbiddenResponse(returnDecorator(props[element])),
+                    props[element].schema &&
+                        ApiForbiddenResponse(returnDecorator(props[element])),
                     ApiExtraModels(props[element].schema)
                 );
                 break;
             case 'notExists':
                 combinedDecorators.push(
-                    ApiNotFoundResponse(returnDecorator(props[element])),
-
-                    ApiExtraModels(props[element].schema)
+                    ApiNotFoundResponse(returnDecorator(props[element]))
                 );
                 break;
             case 'conflict':
                 combinedDecorators.push(
-                    ApiConflictResponse(returnDecorator(props[element])),
-
-                    ApiExtraModels(props[element].schema)
+                    ApiConflictResponse(returnDecorator(props[element]))
                 );
+                if (props[element].schema)
+                    ApiExtraModels(props[element].schema);
                 break;
             case 'unauthorized':
                 combinedDecorators.push(
-                    ApiUnauthorizedResponse(returnDecorator(props[element])),
-
-                    ApiExtraModels(props[element].schema)
+                    ApiUnauthorizedResponse(returnDecorator(props[element]))
                 );
                 break;
         }
+        if (props[element].schema)
+            combinedDecorators.push(ApiExtraModels(props[element].schema));
     });
     return applyDecorators(...combinedDecorators);
 };

@@ -10,7 +10,6 @@ import { RegisterUserDTO } from '../../../common/DTO/user/registerUser.dto';
 import { UserEntity } from '../../../common/database/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserErrorsE } from '../../../common/errors/UserError.enum';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 @Injectable()
@@ -28,14 +27,16 @@ export class CreateUserService {
     /**
      *
      * Saves user local user into database
-     *      *
+     *
      * @returns http status
      */
     public async createLocalUser(props: RegisterUserDTO) {
         try {
             //   if user exists
             if (await this.checkIfUserExist(props.email))
-                throw new Error(UserErrorsE.userExists);
+                throw new ConflictException(
+                    ` user with email: ${props.email} exists`
+                );
             const passwordHash = await this.getUserPasswordHash(props.password);
             const databaseUser = this.userEntity.create({
                 ...props,
@@ -49,13 +50,9 @@ export class CreateUserService {
         } catch (error) {
             this.logger.error({
                 method: 'createLocalUser',
-                error: [error.message] ? [error.message] : error,
+                error: error.message ? error.message : error,
             });
-            //throws proper errors
-            if (error?.message === UserErrorsE.userExists)
-                //user exists can not be created
-                throw new ConflictException('user already exists');
-            else throw new InternalServerErrorException();
+            throw error;
         }
     }
 
@@ -83,7 +80,9 @@ export class CreateUserService {
                 method: 'checkIfUserExist',
                 error,
             });
-            throw new Error(`could not find user with email: ${email}`);
+            throw new InternalServerErrorException(
+                `could not find user with email: ${email}`
+            );
         }
     }
 
