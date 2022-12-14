@@ -17,6 +17,7 @@ import { RefreshTokensEntity } from '../../../common/database/refreshToken.entit
 @Injectable()
 export class LoginService {
     private logger: Logger;
+
     constructor(
         @InjectRepository(UserEntity)
         private readonly userEnitity: Repository<UserEntity>,
@@ -69,7 +70,7 @@ export class LoginService {
                     isEmailConfirmes: user.accountDetails.isEmailConfirmed,
                     shouldPasswordChange: user.password.needsToBeChanged,
                 });
-                this.createRefreshTokenWithHsh(user.id, accessToken);
+                await this.createRefreshTokenWithHsh(user.id, accessToken);
             }
         } catch (error) {
             this.logger.error({
@@ -109,13 +110,14 @@ export class LoginService {
                 token: accessToken,
                 refreshTokenHash,
             });
-            console.log('====================================');
-            console.log(refreshTokenForDB);
-            console.log('====================================');
             await this.userEnitity.update(
                 { id: userId },
                 {
-                    password: {},
+                    password: {
+                        refreshToken: {
+                            ...refreshTokenForDB,
+                        },
+                    },
                 }
             );
             this.logger.log({

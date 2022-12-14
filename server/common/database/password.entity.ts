@@ -19,7 +19,7 @@ export class PasswordsEntity {
     needsToBeChanged: boolean;
 
     @OneToMany(() => RefreshTokensEntity, ({ id }: RefreshTokensEntity) => id, {
-        onDelete: 'CASCADE',
+        cascade: true,
     })
     refreshToken: RefreshTokensEntity[];
     /*

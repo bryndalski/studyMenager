@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 // import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { Transport } from '@nestjs/microservices'
+import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
     const app = await NestFactory.createMicroservice(AppModule, {
@@ -9,7 +9,7 @@ async function bootstrap() {
         options: {
             port: 3001,
         },
-    })
-    await app.listen()
+    });
+    await app.listen();
 }
-void bootstrap()
+void bootstrap();

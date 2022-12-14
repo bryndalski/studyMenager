@@ -1,9 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import {
-    ApiConsumes,
-    ApiCreatedResponse,
-    getSchemaPath,
-} from '@nestjs/swagger';
+
 import { LoginLocalUserDTO } from 'src/common';
 import {
     SuccessLoginLocal,

@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common'
-import { EventsControllerService } from './events-controller.service'
-import { EventsControllerController } from './events-controller.controller'
-import { ClientsModule, Transport } from '@nestjs/microservices'
+import { Module } from '@nestjs/common';
+import { EventsControllerService } from './events-controller.service';
+import { EventsControllerController } from './events-controller.controller';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
     imports: [

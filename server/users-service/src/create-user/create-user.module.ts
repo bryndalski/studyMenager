@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common'
-import { ClientsModule, Transport } from '@nestjs/microservices'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { UserEntity } from '../../../common/database/user.entity'
-import { CreateUserController } from './create-user.controller'
-import { CreateUserService } from './create-user.service'
-import { PasswordsEntity } from '../../../common/database/password.entity'
+import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from '../../../common/database/user.entity';
+import { CreateUserController } from './create-user.controller';
+import { CreateUserService } from './create-user.service';
+import { PasswordsEntity } from '../../../common/database/password.entity';
 
 @Module({
     imports: [

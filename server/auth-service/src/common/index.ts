@@ -1,1 +1,1 @@
-export * from './DTO/LoginLocalUser.dto'
+export * from './DTO/LoginLocalUser.dto';

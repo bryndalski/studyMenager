@@ -12,7 +12,6 @@ import {
     ApiUnauthorizedResponse,
     getSchemaPath,
 } from '@nestjs/swagger';
-import { LoginLocalUserDTO } from '../../../auth-service/src/common/DTO/LoginLocalUser.dto';
 
 interface ISingleReposnse {
     description: string;

@@ -20,42 +20,35 @@ module.exports = {
     ignorePatterns: ['.eslintrc.js'],
     rules: {
         '@typescript-eslint/no-floating-promises': 'warn',
-        // 'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-vars': 'error',
         'no-dupe-args': 'error',
         eqeqeq: 'error',
-        'max-lines': [
-            'error',
-            {
-                max: 200,
-                skipBlankLines: true,
-                skipComments: true,
-            },
-        ],
         '@typescript-eslint/naming-convention': [
             'error',
             {
                 selector: 'interface',
-                format: ['camelCase'],
+                format: ['PascalCase'],
                 prefix: ['I'],
             },
             {
                 selector: 'variable',
                 modifiers: ['const'],
-                format: ['camelCase', 'UPPER_CASE', 'CamelCase'],
+                format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
                 leadingUnderscore: 'allow',
                 trailingUnderscore: 'allow',
             },
             {
                 selector: ['function', 'classMethod'],
                 modifiers: ['const'],
-                format: ['camelCase'],
+                format: ['PascalCase'],
                 trailingUnderscore: 'allow',
             },
         ],
         'no-empty': 'error',
         'no-cond-assign': 'error',
         'no-unreachable-loop': 'error',
-        'unused-imports/no-unused-imports': 'error',
+        '@typescript-eslint/no-explicit-any': 'off',
         'no-use-before-define': [
             'error',
             {
@@ -76,7 +69,7 @@ module.exports = {
         'max-lines': [
             'error',
             {
-                max: 150,
+                max: 350,
                 skipBlankLines: true,
                 skipComments: true,
             },
@@ -84,7 +77,7 @@ module.exports = {
         'max-lines': [
             'warn',
             {
-                max: 120,
+                max: 250,
                 skipBlankLines: true,
                 skipComments: true,
             },
@@ -93,12 +86,12 @@ module.exports = {
         'no-empty': 'error',
         'no-extra-semi': 'error',
         'no-implied-eval': 'error',
-        'no-inline-comments': 'warn',
+        // 'no-inline-comments': 'warn',
         'no-lonely-if': 'warn',
         'no-undefined': 'error',
         'no-useless-catch': 'error',
         'no-var': 'error',
-        'prefer-const': 'error',
+        'prefer-const': 'warn',
         'lines-between-class-members': 'error',
         'promise/no-return-wrap': 'error',
         'promise/no-nesting': 'error',

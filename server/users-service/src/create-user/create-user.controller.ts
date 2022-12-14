@@ -1,8 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
-import { RegisterUserDTO } from '../../../common/DTO/user/registerUser.dto'
-import { CreateUserService } from './create-user.service'
-import { SwaggerPost } from '../../../common/decorators/swagger/SwaggerPost.decorator'
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { RegisterUserDTO } from '../../../common/DTO/user/registerUser.dto';
+import { CreateUserService } from './create-user.service';
+import { SwaggerPost } from '../../../common/decorators/swagger/SwaggerPost.decorator';
 @ApiTags('create-user')
 @Controller('create-user')
 export class CreateUserController {
@@ -17,6 +17,6 @@ export class CreateUserController {
         apiTag: '',
     })
     async createLocalUser(@Body() user: RegisterUserDTO) {
-        return await this.createUserService.createLocalUser(user)
+        return await this.createUserService.createLocalUser(user);
     }
 }

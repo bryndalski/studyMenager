@@ -1,4 +1,4 @@
-export const ErrorCodes = {
+export const ERROR_CODES = {
     login: {
         userNotFound: {
             coode: 'LOG01',
@@ -14,4 +14,4 @@ export const ErrorCodes = {
         },
     },
     register: {},
-}
+};
