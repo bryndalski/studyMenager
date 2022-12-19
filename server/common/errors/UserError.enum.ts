@@ -1,3 +1,3 @@
 export enum UserErrorsE {
-    userExists = 'userExists',
+  userExists = 'userExists',
 }

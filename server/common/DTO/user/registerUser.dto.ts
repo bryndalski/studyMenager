@@ -2,46 +2,46 @@ import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterUserDTO {
-    @IsEmail()
-    @ApiProperty({
-        description: 'email provided by user',
-        example: 'kowalski@mail.com',
-    })
-    email: string;
+  @IsEmail()
+  @ApiProperty({
+    description: 'email provided by user',
+    example: 'kowalski@mail.com',
+  })
+  email: string;
 
-    @ApiProperty({
-        description: 'Users password',
-        example: 'superSecretPassword123!@',
-    })
-    @MinLength(7)
-    password: string;
+  @ApiProperty({
+    description: 'Users password',
+    example: 'superSecretPassword123!@',
+  })
+  @MinLength(7)
+  password: string;
 
-    @ApiProperty()
-    @IsString()
-    @ApiProperty({
-        description: 'first name provided by user',
-        example: 'Adam',
-    })
-    @MaxLength(20)
-    firstName: string;
+  @ApiProperty()
+  @IsString()
+  @ApiProperty({
+    description: 'first name provided by user',
+    example: 'Adam',
+  })
+  @MaxLength(20)
+  firstName: string;
 
-    @ApiProperty()
-    @IsString()
-    @ApiProperty({
-        description: 'last name provided by user',
-        example: 'Kowalski',
-        maxLength: 100,
-    })
-    @MaxLength(100)
-    lastName: string;
+  @ApiProperty()
+  @IsString()
+  @ApiProperty({
+    description: 'last name provided by user',
+    example: 'Kowalski',
+    maxLength: 100,
+  })
+  @MaxLength(100)
+  lastName: string;
 
-    @ApiProperty()
-    @IsString()
-    @ApiProperty({
-        description: 'nikcname visible to other users',
-        example: 'GigaChadKowalski',
-        maxLength: 150,
-    })
-    @MaxLength(150)
-    nickname: string;
+  @ApiProperty()
+  @IsString()
+  @ApiProperty({
+    description: 'nikcname visible to other users',
+    example: 'GigaChadKowalski',
+    maxLength: 150,
+  })
+  @MaxLength(150)
+  nickname: string;
 }

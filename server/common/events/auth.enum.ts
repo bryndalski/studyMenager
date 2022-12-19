@@ -1,3 +1,3 @@
 export enum AuthEventNames {
-    hashPassword = 'hashPassword',
+  hashPassword = 'hashPassword',
 }

@@ -8,18 +8,18 @@ import { RefreshTokensEntity } from '../../../common/database/refreshToken.entit
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([UserEntity, RefreshTokensEntity]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get('JWT_SECRET'),
-                signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
-            }),
-        }),
-    ],
-    controllers: [LoginController],
-    providers: [LoginService],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, RefreshTokensEntity]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
+      }),
+    }),
+  ],
+  controllers: [LoginController],
+  providers: [LoginService],
 })
 export class LoginModule {}

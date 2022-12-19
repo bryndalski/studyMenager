@@ -4,22 +4,22 @@ import { EventsControllerController } from './events-controller.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
-    imports: [
-        ClientsModule.register([
-            {
-                name: 'AUTH_SERVICE',
-                transport: Transport.RMQ,
-                options: {
-                    urls: [process.env.BUNNY_CONNECT],
-                    queue: process.env.AUTH_QUEUE,
-                    queueOptions: {
-                        durable: false,
-                    },
-                },
-            },
-        ]),
-    ],
-    providers: [EventsControllerService],
-    controllers: [EventsControllerController],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'AUTH_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.BUNNY_CONNECT],
+          queue: process.env.AUTH_QUEUE,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+  ],
+  providers: [EventsControllerService],
+  controllers: [EventsControllerController],
 })
 export class EventsControllerModule {}
