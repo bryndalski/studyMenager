@@ -1,9 +1,9 @@
 import {
-    ForbiddenException,
-    Injectable,
-    InternalServerErrorException,
-    Logger,
-    NotFoundException,
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginLocalUserDTO } from 'src/common';
@@ -17,125 +17,122 @@ import { RefreshTokensEntity } from '../../../common/database/refreshToken.entit
 import { SuccessLoginLocal } from 'src/common/docsSchemas/login.local.dto';
 @Injectable()
 export class LoginService {
-    private logger: Logger;
+  private logger: Logger;
 
-    constructor(
-        @InjectRepository(UserEntity)
-        private readonly userEnitity: Repository<UserEntity>,
-        @InjectRepository(RefreshTokensEntity)
-        private readonly refreshTokensEntity: Repository<RefreshTokensEntity>,
-        private jwtService: JwtService,
-        private configService: ConfigService
-    ) {
-        this.logger = new Logger(LoginService.name);
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userEnitity: Repository<UserEntity>,
+    @InjectRepository(RefreshTokensEntity)
+    private readonly refreshTokensEntity: Repository<RefreshTokensEntity>,
+    private jwtService: JwtService,
+    private configService: ConfigService
+  ) {
+    this.logger = new Logger(LoginService.name);
+  }
+
+  /**
+   * Login local user
+   * @param {LoginLocalUserDTO}
+   * @returns {Promise<LoginLocalUserDTO>} Access and refresh token
+   */
+  public async loginLocalUser(
+    loginUserBody: LoginLocalUserDTO
+  ): Promise<SuccessLoginLocal> {
+    try {
+      const user = await this.userEnitity.findOne({
+        where: {
+          email: loginUserBody.email,
+        },
+        relations: {
+          password: true,
+          accountDetails: true,
+        },
+        select: {
+          accountDetails: {
+            isActive: true,
+            isEmailConfirmed: true,
+          },
+          password: {
+            passwordHash: true,
+            needsToBeChanged: true,
+          },
+          id: true,
+        },
+      });
+      if (user === null) {
+        throw new NotFoundException(ERROR_CODES.login.userNotFound);
+      }
+      if (!user.accountDetails.isActive) {
+        throw new ForbiddenException(ERROR_CODES.login.userAccountNotActice);
+      }
+      if (bcrypt.compare(loginUserBody.password, user.password.passwordHash)) {
+        const accessToken = this.jwtService.sign({
+          id: user.id,
+          isEmailConfirmes: user.accountDetails.isEmailConfirmed,
+          shouldPasswordChange: user.password.needsToBeChanged,
+        });
+        const refreshTokenHash = await this.createRefreshTokenWithHsh(
+          user.id,
+          accessToken
+        );
+        return { accessToken, refreshToken: refreshTokenHash };
+      }
+    } catch (error) {
+      this.logger.error({
+        method: this.loginLocalUser.name,
+        error: error?.message,
+      });
+      throw error;
     }
+  }
 
-    public async loginLocalUser(
-        loginUserBody: LoginLocalUserDTO
-    ): Promise<SuccessLoginLocal> {
-        try {
-            const user = await this.userEnitity.findOne({
-                where: {
-                    email: loginUserBody.email,
-                },
-                relations: {
-                    password: true,
-                    accountDetails: true,
-                },
-                select: {
-                    accountDetails: {
-                        isActive: true,
-                        isEmailConfirmed: true,
-                    },
-                    password: {
-                        passwordHash: true,
-                        needsToBeChanged: true,
-                    },
-                    id: true,
-                },
-            });
-            if (user === null) {
-                throw new NotFoundException(ERROR_CODES.login.userNotFound);
-            }
-            if (!user.accountDetails.isActive) {
-                throw new ForbiddenException(
-                    ERROR_CODES.login.userAccountNotActice
-                );
-            }
-            if (
-                bcrypt.compare(
-                    loginUserBody.password,
-                    user.password.passwordHash
-                )
-            ) {
-                const accessToken = this.jwtService.sign({
-                    id: user.id,
-                    isEmailConfirmes: user.accountDetails.isEmailConfirmed,
-                    shouldPasswordChange: user.password.needsToBeChanged,
-                });
-                await this.createRefreshTokenWithHsh(user.id, accessToken);
-                return { accessToken };
-            }
-        } catch (error) {
-            this.logger.error({
-                method: this.loginLocalUser.name,
-                error: error?.message,
-            });
-            throw error;
+  /**
+   * Create refresh access token
+   * @param userId
+   * @param accessToken
+   * @returns {Promise<string>} refresh token hash
+   */
+  private async createRefreshTokenWithHsh(
+    userId: number,
+    accessToken: string
+  ): Promise<string> {
+    try {
+      const refreshToken = this.jwtService.sign(
+        { id: userId },
+        {
+          expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRES'),
+          secret: this.configService.get('JWT_REFRESH_TOKEN_HASH'),
         }
+      );
+
+      this.logger.log({
+        method: this.createRefreshTokenWithHsh.name,
+        message: `created refresh token for user ${userId}`,
+      });
+
+      const refreshTokenHash = bcrypt.hashSync(
+        refreshToken,
+        bcrypt.genSaltSync()
+      );
+
+      const refreshTokenForDB = this.refreshTokensEntity.create({
+        token: accessToken,
+        refreshTokenHash,
+        user: { id: userId },
+      });
+
+      await this.refreshTokensEntity.save(refreshTokenForDB);
+      this.logger.log({
+        method: this.createRefreshTokenWithHsh.name,
+        message: `updated database refresh token for user ${userId}`,
+      });
+      return refreshTokenHash;
+    } catch (error) {
+      this.logger.error({
+        method: this.createRefreshTokenWithHsh.name,
+        error: error?.message,
+      });
+      throw new InternalServerErrorException('Could not create refresh token');
     }
-
-    /**
-     * Create refresh access token
-     * @param userId
-     * @param accessToken
-     * @returns
-     */
-    private async createRefreshTokenWithHsh(
-        userId: number,
-        accessToken: string
-    ): Promise<string> {
-        try {
-            const refreshToken = this.jwtService.sign(
-                { id: userId },
-                {
-                    expiresIn: this.configService.get(
-                        'JWT_REFRESH_TOKEN_EXPIRES'
-                    ),
-                    secret: this.configService.get('JWT_REFRESH_TOKEN_HASH'),
-                }
-            );
-
-            this.logger.log({
-                method: this.createRefreshTokenWithHsh.name,
-                message: `created refresh token for user ${userId}`,
-            });
-
-            const refreshTokenHash = bcrypt.hashSync(
-                refreshToken,
-                bcrypt.genSaltSync()
-            );
-
-            const refreshTokenForDB = this.refreshTokensEntity.create({
-                token: accessToken,
-                refreshTokenHash,
-                user: { id: userId },
-            });
-
-            await this.refreshTokensEntity.save(refreshTokenForDB);
-            this.logger.log({
-                method: this.createRefreshTokenWithHsh.name,
-                message: `updated database refresh token for user ${userId}`,
-            });
-            return refreshToken;
-        } catch (error) {
-            this.logger.error({
-                method: this.createRefreshTokenWithHsh.name,
-                error: error?.message,
-            });
-            throw new InternalServerErrorException(
-                'Could not create refresh token'
-            );
-        }
-    }
+  }
 }

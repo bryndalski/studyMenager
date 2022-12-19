@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
@@ -17,6 +17,9 @@ async function bootstrap() {
             queueOptions: { durable: true },
             prefetchCount: 1,
         },
+    });
+    app.enableVersioning({
+        type: VersioningType.URI,
     });
     await app.startAllMicroservices();
     app.setGlobalPrefix(configService.get('AUTH_SERVICE_PREFIX'));
